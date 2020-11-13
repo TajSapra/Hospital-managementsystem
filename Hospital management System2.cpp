@@ -2,6 +2,7 @@
 #include <vector>
 #include<string>
 #include <iterator>
+#include <map>
 #include <climits>
 #include <unordered_map>
 using namespace std;
@@ -19,7 +20,6 @@ class patient{
 };
 unordered_map<int,patient> database;
 vector<int>ispresent;
-
 void addpatient(){
     patient temp;
     cout<<"Enter the patients name:";
