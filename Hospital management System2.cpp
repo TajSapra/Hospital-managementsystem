@@ -1,14 +1,16 @@
 #include <iostream>
-#include <map>
+#include <vector>
 #include<string>
 #include <iterator>
+#include <climits>
+#include <unordered_map>
+#include <map>
 using namespace std;
-//An ordered map(or simply map) is used to implement a hospital management system 
+//An unordered mapalong with a vector is used to implement a hospital management system 
 //It is a better way to implement as compared to that done by priority queue;
-//Out of the 6  functions, 3 are O(1) and 2 are O(N).
+//Out of the 5 functions, 3 are O(1) and 2 are O(N).
 //for a priority queue, 3 were O(N) and 2 were O(1).
-//the function print entirequeue cannot be improved from O(N)
-int idcounter=0;
+int idcounter=1;
 
 class patient{
     public:
@@ -17,11 +19,8 @@ class patient{
     int age;
     int Priority;
 };
-
-map<int ,patient> plist;
-map<int, int> ispresent;
-map<int ,patient> dq;
-
+unordered_map<int,patient> database;
+vector<int>ispresent;
 
 void addpatient(){
     patient temp;
@@ -32,76 +31,75 @@ void addpatient(){
     temp.patientid=idcounter;
     cout<<"Enter the patient critical factor(Priority):";
     cin>>temp.Priority;
-    plist[idcounter]=temp;
-    ispresent[idcounter]=1;
-    dq[temp.Priority]=temp;
+    ispresent.push_back(1);
+    database[temp.patientid]=temp;
     idcounter++;
 }
 
 void getTop(){
-    patient temp;
-    int i,count=0, ans=-1;
-    for(map<int, patient>::iterator it=plist.begin();it!=plist.end();it++){
-        if(ans<it->second.Priority){
-            // cout<<"check1 "<<ans<<" "<<it->second.Priority<<endl;
-            ans=it->second.Priority;
-            i=count;
-            temp=it->second;
+    patient ans;
+    ans.Priority=INT_MAX;
+    for(auto i:database){
+        if(i.second.Priority==0||ispresent[i.second.patientid-1]!=1)
+            continue;
+        if(i.second.Priority<ans.Priority){
+            ans=i.second;
         }
-        count++;
     }
-    cout<<"The details of the next patient:"<<endl<<endl;
-    cout<<"Name of patient:"<<temp.name<<endl;
-    cout<<"Age of patient:"<<temp.age<<endl;
-    cout<<"Id of patient:"<<temp.patientid<<endl;
+    cout<<"The details of the patient with the given id found:"<<endl<<endl;
+    cout<<"Name of patient:"<<ans.name<<endl;
+    cout<<"Age of patient:"<<ans.age<<endl;
+    cout<<"Id of patient:"<<ans.patientid<<endl;
     cout<<endl;
 }
 
 void removetop(){
-    int i,count=0, ans=-1;
-    for(map<int, patient>::iterator it=plist.begin();it!=plist.end();it++){
-        if(ans<it->second.Priority){
-            // cout<<"check1 "<<ans<<" "<<it->second.Priority<<endl;
-            ans=it->second.Priority;
-            i=count;
+    patient ans;
+    ans.Priority=INT_MAX;
+    for(auto i:database){
+        if(i.second.Priority==0)
+            continue;
+        if(i.second.Priority<ans.Priority){
+            ans=i.second;
         }
-        count++;
     }
-    // cout<<i<<plist[i].name<<endl;
-    ispresent[i]=0;
+    ispresent[ans.patientid-1]=0;
 }
 
 void removeany(){
+    cout<<"Enter the patient id to be removed: ";
     int id;
     cin>>id;
-    ispresent[id]=0;
+    ispresent[id-1]=0;
 }
 
 void search(){
     int id;
     cout<<"Enter the patient id: "<<endl;
     cin>>id;
-    if(ispresent[id]!=1){
+    if(ispresent[id-1]!=1){
         cout<<"There is no patient."<<endl;
     }
     else{
         cout<<"The details of the patient with the given id found:"<<endl<<endl;
-        cout<<"Name of patient:"<<plist[id].name<<endl;
-        cout<<"Age of patient:"<<plist[id].age<<endl;
-        cout<<"Id of patient:"<<plist[id].patientid<<endl;
+        cout<<"Name of patient:"<<database[id].name<<endl;
+        cout<<"Age of patient:"<<database[id].age<<endl;
+        cout<<"Id of patient:"<<database[id].patientid<<endl;
         cout<<endl;
     }
 }
 
 void printqueue(){
-    int counter=0;
-    for(map<int, patient>::reverse_iterator it=dq.rbegin();it!=dq.rend();it++){
-        if(ispresent[it->second.patientid]==0){
-            continue;
+    map<int,patient>qu;
+    for(int i=0;i<ispresent.size();i++){
+        if(ispresent[i]){
+            qu[database[i+1].Priority]=database[i+1];
         }
-        cout<<"Name of patient:"<<it->second.name<<endl;
-        cout<<"Age of patient:"<<it->second.age<<endl;
-        cout<<"Id of patient:"<<it->second.patientid<<endl;
+    }
+    for(auto i:qu){
+        cout<<"Name of patient:"<<i.second.name<<endl;
+        cout<<"Age of patient:"<<i.second.age<<endl;
+        cout<<"Id of patient:"<<i.second.patientid<<endl;
         cout<<endl;
     }
 }
