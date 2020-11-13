@@ -4,14 +4,12 @@
 #include <iterator>
 #include <climits>
 #include <unordered_map>
-#include <map>
 using namespace std;
 //An unordered mapalong with a vector is used to implement a hospital management system 
 //It is a better way to implement as compared to that done by priority queue;
 //Out of the 5 functions, 3 are O(1) and 2 are O(N).
 //for a priority queue, 3 were O(N) and 2 were O(1).
 int idcounter=1;
-
 class patient{
     public:
     string name;
